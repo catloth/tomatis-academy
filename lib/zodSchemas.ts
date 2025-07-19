@@ -58,4 +58,25 @@ export const courseSchema = z.object({
     .enum(courseStatus, {message: "É necessário atribuir um status ao curso."})
 })
 
+export const chapterSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: "O nome deve conter pelo menos 3 caracteres."} ),
+  courseId: z.string().uuid({ message: "O identificador do curso é inválido."}),
+});
+
+export const lessonSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: "O nome deve conter pelo menos 3 caracteres."} ),
+  courseId: z.string().uuid({ message: "O identificador do curso é inválido."}),
+  chapterId: z.string().uuid({ message: "O identificador do módulo é inválido."}),
+  description: z.string().min(3, {message: "A descrição deve conter pelo menos 3 caracteres."}).optional(),
+  thumbnailKey: z.string().optional(),
+  videoKey: z.string().optional(),
+
+});
+
 export type CourseSchemaType = z.infer<typeof courseSchema>;
+export type ChapterSchemaType = z.infer<typeof chapterSchema>;
+export type LessonSchemaType = z.infer<typeof lessonSchema>;
