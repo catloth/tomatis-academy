@@ -23,3 +23,5 @@ export async function adminGetCourses() {
 
   return data;
 }
+
+export type AdminCourseType = Awaited<ReturnType<typeof adminGetCourses>>[0];

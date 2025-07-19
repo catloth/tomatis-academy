@@ -184,6 +184,7 @@ export function EditCourseForm({ data }: iAppProps) {
               <FormLabel>Imagem de capa</FormLabel>
               <FormControl>
                 <Uploader
+                  fileTypeAccepted="image"
                   onChange={field.onChange}
                   value={field.value}
                 />

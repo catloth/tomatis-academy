@@ -1,14 +1,19 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from 'react'
-import { FileRejection, useDropzone } from 'react-dropzone'
-import { Card, CardContent } from '../ui/card';
-import { cn } from '@/lib/utils';
-import { RenderEmptyState, RenderErrorState, RenderUploadedState, RenderUploadingState } from './RenderState';
-import { toast } from 'sonner';
-import { v4 as uuidv4 } from 'uuid';
-import { toNamespacedPath } from 'path';
-import { useContructUrl } from '@/hooks/use-construct-url';
+import React, { useCallback, useEffect, useState } from "react";
+import { FileRejection, useDropzone } from "react-dropzone";
+import { Card, CardContent } from "../ui/card";
+import { cn } from "@/lib/utils";
+import {
+  RenderEmptyState,
+  RenderErrorState,
+  RenderUploadedState,
+  RenderUploadingState,
+} from "./RenderState";
+import { toast } from "sonner";
+import { v4 as uuidv4 } from "uuid";
+import { toNamespacedPath } from "path";
+import { useContructUrl } from "@/hooks/use-construct-url";
 
 interface UploaderState {
   id: string | null;
@@ -24,11 +29,11 @@ interface UploaderState {
 
 interface iAppProps {
   value?: string;
-  onChange?: (value: string) => void
+  onChange?: (value: string) => void;
+  fileTypeAccepted: "image" | "video";
 }
 
-export function Uploader({ onChange, value }: iAppProps) {
-
+export function Uploader({ onChange, value, fileTypeAccepted }: iAppProps) {
   const fileUrl = useContructUrl(value || "");
 
   const [fileState, setFileState] = useState<UploaderState>({
@@ -38,12 +43,13 @@ export function Uploader({ onChange, value }: iAppProps) {
     uploading: false,
     progress: 0,
     isDeleting: false,
-    fileType: "image",
+    fileType: fileTypeAccepted,
     key: value,
-    objectUrl: fileUrl,
+    // Caso objectUrl = "", o componente de upload irá exibir uma imagem quebrada.
+    objectUrl: value ? fileUrl : undefined,
   });
 
-  async function uploadFile(file: File) {
+  const uploadFile = useCallback(async (file: File) => {
     setFileState((prev) => ({
       ...prev,
       uploading: true,
@@ -59,7 +65,7 @@ export function Uploader({ onChange, value }: iAppProps) {
           fileName: file.name,
           contentType: file.type,
           size: file.size,
-          isImage: true,
+          isImage: fileTypeAccepted === "image" ? true : false,
         }),
       });
 
@@ -84,17 +90,16 @@ export function Uploader({ onChange, value }: iAppProps) {
         xhr.upload.onprogress = (event) => {
           if (event.lengthComputable) {
             const percentageCompleted = (event.loaded / event.total) * 100;
-            
+
             setFileState((prev) => ({
               ...prev,
               progress: Math.round(percentageCompleted),
             }));
-
           }
-        }
+        };
 
         xhr.onload = () => {
-          if (xhr.status === 200  || xhr.status === 204) {
+          if (xhr.status === 200 || xhr.status === 204) {
             setFileState((prev) => ({
               ...prev,
               progress: 100,
@@ -110,11 +115,11 @@ export function Uploader({ onChange, value }: iAppProps) {
           } else {
             reject(new Error("Ocorreu uma falha ao enviar o arquivo."));
           }
-        }
+        };
 
         xhr.onerror = () => {
           reject(new Error("Ocorreu uma falha ao enviar o arquivo."));
-        }
+        };
 
         xhr.open("PUT", presignedUrl);
         xhr.setRequestHeader("Content-Type", file.type);
@@ -130,9 +135,10 @@ export function Uploader({ onChange, value }: iAppProps) {
         uploading: false,
       }));
     }
-  }
+  }, [fileTypeAccepted, onChange]);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
         const file = acceptedFiles[0];
 
@@ -149,14 +155,14 @@ export function Uploader({ onChange, value }: iAppProps) {
           error: false,
           id: uuidv4(),
           isDeleting: false,
-          fileType: "image",
+          fileType: fileTypeAccepted,
         });
 
         uploadFile(file);
       }
-    }, 
-    [ fileState.objectUrl ] // To avoid: ReactHook useCallback has a missing dependency: 'fileState.objectUrl'. Either include it or remove the dependency array.
-  ); 
+    },
+    [fileState.objectUrl, uploadFile, fileTypeAccepted] // To avoid: ReactHook useCallback has a missing dependency: 'fileState.objectUrl'. Either include it or remove the dependency array.
+  );
 
   async function handleRemoveFile() {
     if (fileState.isDeleting || !fileState.objectUrl) return;
@@ -200,43 +206,50 @@ export function Uploader({ onChange, value }: iAppProps) {
         progress: 0,
         objectUrl: undefined,
         error: false,
-        fileType: "image",
+        fileType: fileTypeAccepted,
         id: null,
         isDeleting: false,
       }));
 
       toast.success("O arquivo foi excluído do servidor com sucesso.");
     } catch {
-      toast.error("Ocorreu um erro ao tentar excluir o arquivo do servidor. Por favor, tente novamente.");
+      toast.error(
+        "Ocorreu um erro ao tentar excluir o arquivo do servidor. Por favor, tente novamente."
+      );
 
       setFileState((prev) => ({
         ...prev,
         isDeleting: false,
         error: true,
       }));
-
     }
   }
 
   function rejectedFiles(fileRejection: FileRejection[]) {
-    if(fileRejection.length) {
+    if (fileRejection.length) {
       const invalidFileType = fileRejection.find(
         (rejection) => rejection.errors[0].code === "file-invalid-type"
       );
 
-      if(invalidFileType) {
-        toast.error("O tipo de arquivo selecionado é inválido, você deve selecionar arquivos do tipo imagem.");
+      if (invalidFileType) {
+        toast.error(
+          "O tipo de arquivo selecionado é inválido, você deve selecionar arquivos do tipo imagem."
+        );
       }
 
       const tooManyFiles = fileRejection.find(
         (rejection) => rejection.errors[0].code === "too-many-files"
       );
 
-      if(tooManyFiles) {
-        toast.error("Múltiplos arquivos selecionados, você deve selecionar apenas um arquivo.");
+      if (tooManyFiles) {
+        toast.error(
+          "Múltiplos arquivos selecionados, você deve selecionar apenas um arquivo."
+        );
       }
 
-      const fileSizeTooBig = fileRejection.find((rejection) => rejection.errors[0].code === "file-too-large");
+      const fileSizeTooBig = fileRejection.find(
+        (rejection) => rejection.errors[0].code === "file-too-large"
+      );
       if (fileSizeTooBig) {
         toast.error("O tamanho do arquivo selecionado excede o limite de 5mb.");
       }
@@ -246,28 +259,29 @@ export function Uploader({ onChange, value }: iAppProps) {
   function renderContent() {
     if (fileState.uploading) {
       return (
-        <RenderUploadingState 
+        <RenderUploadingState
           file={fileState.file as File}
-          progress={fileState.progress} 
+          progress={fileState.progress}
         />
-      )
+      );
     }
 
     if (fileState.error) {
-      return <RenderErrorState />
+      return <RenderErrorState />;
     }
 
     if (fileState.objectUrl) {
       return (
-        <RenderUploadedState 
-          handleRemoveFile={handleRemoveFile} 
+        <RenderUploadedState
+          handleRemoveFile={handleRemoveFile}
           previewUrl={fileState.objectUrl}
           isDeleting={fileState.isDeleting}
+          fileType={fileState.fileType}
         />
-      )
+      );
     }
 
-    return <RenderEmptyState isDragActive={isDragActive} />
+    return <RenderEmptyState isDragActive={isDragActive} />;
   }
 
   useEffect(() => {
@@ -276,29 +290,34 @@ export function Uploader({ onChange, value }: iAppProps) {
       if (fileState.objectUrl && !fileState.objectUrl.startsWith("http")) {
         URL.revokeObjectURL(fileState.objectUrl);
       }
-    }
+    };
   }, [fileState.objectUrl]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "image/*": [] },
+    accept:
+      fileTypeAccepted === "video" ? { "video/*": [] } : { "image/*": [] },
     maxFiles: 1,
     multiple: false,
-    maxSize: 5 * 1024 * 1024, // 5mb
+    maxSize: fileTypeAccepted === "image" ? 5 * 1024 * 1024 : 5000 * 1024 * 1024, // 5mb vs 5gb
     onDropRejected: rejectedFiles,
     disabled: fileState.uploading || !!fileState.objectUrl, // o uso de duas exclamações aqui serve para "converter" para booleano a presença da string.
   });
 
   return (
-    <Card {...getRootProps()} className={cn(
-      "relative border-2 border-dashed transition-colors duration-200 ease-in-out w-full h-64", 
-      isDragActive 
-      ? "border-primary bg-primary/10 border-solid"
-      : "border-border hover:border-primary")}>
-        <CardContent className="flex items-center justify-center h-full w-full p-4">
-          <input {...getInputProps()} />
-          {renderContent()}
-        </CardContent>
+    <Card
+      {...getRootProps()}
+      className={cn(
+        "relative border-2 border-dashed transition-colors duration-200 ease-in-out w-full h-64",
+        isDragActive
+          ? "border-primary bg-primary/10 border-solid"
+          : "border-border hover:border-primary"
+      )}
+    >
+      <CardContent className="flex items-center justify-center h-full w-full p-4">
+        <input {...getInputProps()} />
+        {renderContent()}
+      </CardContent>
     </Card>
-  )
+  );
 }
