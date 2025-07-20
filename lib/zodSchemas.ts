@@ -50,7 +50,7 @@ export const courseSchema = z.object({
   smallDescription: z
     .string()
     .min(8, {message: "A descrição simplificada deve conter no mínimo 8 caracteres."})
-    .max(256, {message: "A descrição resumida deve conter no máximo 256 caracteres."}),
+    .max(1024, {message: "A descrição resumida deve conter no máximo 1024 caracteres."}),
 
   slug: z.string().min(8, {message: "Slug deve conter, pelo menos, 8 caracteres."}),
 
