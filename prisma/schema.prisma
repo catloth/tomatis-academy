@@ -103,7 +103,7 @@ model Chapter {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   courseId  String
-  Course    Course   @relation(fields: [courseId], references: [id])
+  Course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
   lessons   Lesson[]
 }
 
@@ -117,7 +117,7 @@ model Lesson {
   updatedAt    DateTime @updatedAt
   chapterId    String
   position     Int
-  Chapter      Chapter  @relation(fields: [chapterId], references: [id])
+  Chapter      Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 }
 
 enum CourseLevel {

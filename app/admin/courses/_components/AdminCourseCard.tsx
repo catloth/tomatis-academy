@@ -1,12 +1,26 @@
+import { AdminCourseType } from "@/app/data/admin/admin-get-courses";
 import { Card, CardContent } from "@/components/ui/card";
-import { AdminCourseType } from "../page";
 import Image from "next/image";
 import { useContructUrl } from "@/hooks/use-construct-url";
 import Link from "next/link";
-import { ArrowRight, Eye, MoreVertical, Pencil, School, TimerIcon, Trash2 } from "lucide-react";
+import {
+  ArrowRight,
+  Eye,
+  MoreVertical,
+  Pencil,
+  School,
+  TimerIcon,
+  Trash2,
+} from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface iAppProps {
   data: AdminCourseType;
@@ -21,11 +35,17 @@ export function AdminCourseCard({ data }: iAppProps) {
       <div className="absolute top-2 right-2 z-10">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="secondary" size="icon">
+            <Button
+              variant="secondary"
+              size="icon"
+            >
               <MoreVertical className="size-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuContent
+            align="end"
+            className="w-48"
+          >
             <DropdownMenuItem asChild>
               <Link href={`/admin/courses/${data.id}/edit`}>
                 <Pencil className="size-4 mr-2" />
@@ -75,7 +95,41 @@ export function AdminCourseCard({ data }: iAppProps) {
             <p className="text-sm text-muted-foreground">{data.level}</p>
           </div>
         </div>
-        <Link className={buttonVariants({className: "w-full mt-4"})} href={`/admin/courses/${data.id}/edit`}>Editar o curso <ArrowRight className="size-4" /></Link>
+        <Link
+          className={buttonVariants({ className: "w-full mt-4" })}
+          href={`/admin/courses/${data.id}/edit`}
+        >
+          Editar o curso <ArrowRight className="size-4" />
+        </Link>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function AdminCourseCardSkeleton() {
+  return (
+    <Card className="group relative py-0 gap-0">
+      <div className="absolute top-2 right-2 z-10 flex items-center gap-2">
+        <Skeleton className="h-6 w-16 rounded-full" />
+        <Skeleton className="size-8 rounded-md" />
+      </div>
+      <div className="w-full relative h-fit">
+        <Skeleton className="w-full rounded-top-lg aspect-video h-[250-px] object-cover" />
+      </div>
+      <CardContent className="p-4">
+        <Skeleton className="h-6 w-3/4 mb-2 rounded" />
+        <Skeleton className="h=4 w-full mb-4 rounded" />
+        <div className="mt-4 flex items-center gap-x-5">
+          <div className="flex items-center gap-x-2">
+            <Skeleton className="size-6 rounded-md" />
+            <Skeleton className="h-4 w-10 rounded" />
+          </div>
+          <div className="flex items-center gap-x-2">
+            <Skeleton className="size-6 rounded-md" />
+            <Skeleton className="h-4 w-10 rounded" />
+          </div>
+        </div>
+        <Skeleton className="mt-4 h-10 w-full rounded" />
       </CardContent>
     </Card>
   );
