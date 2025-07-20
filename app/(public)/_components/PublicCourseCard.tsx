@@ -28,7 +28,7 @@ export function PublicCourseCard({ data }: iAppProps) {
       />
 
       <CardContent className="p-4">
-        <Link className="font-medium text-lg line-clamp-2 hover:underline group-hover:text-primary transition-colors" href={`/course/${data.slug}`}>{data.title}</Link>
+        <Link className="font-medium text-lg line-clamp-2 hover:underline group-hover:text-primary transition-colors" href={`/courses/${data.slug}`}>{data.title}</Link>
         <p className="line-clamp-2 text-sm text-muted-foreground leading-tight mt-2">{data.smallDescription}</p>
         <div className="mt-4 flex items-center gap-x-5">
           <div className="flex items-center gap-x-2">

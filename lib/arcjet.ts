@@ -1,7 +1,6 @@
 import "server-only";
 
 import arcjet, {
-  detectBot,
   fixedWindow,
   protectSignup,
   sensitiveInfo,
@@ -11,7 +10,6 @@ import arcjet, {
 import { env } from "./env";
 
 export {
-  detectBot,
   fixedWindow,
   protectSignup,
   sensitiveInfo,

@@ -1,7 +1,6 @@
 import { getIndividualCourse } from "@/app/data/course/get-course";
 import { RenderDescription } from "@/components/rich-text-editor/RenderDescription";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Collapsible,
@@ -20,12 +19,17 @@ import {
 } from "@tabler/icons-react";
 import { CheckIcon } from "lucide-react";
 import Image from "next/image";
+import { checkIfCourseBought } from "@/app/data/user/user-is-enrolled";
+import Link from "next/link";
+import { EnrollmentButton } from "./_components/EnrollmentButton";
+import { buttonVariants } from "@/components/ui/button";
 
 type Params = Promise<{ slug: string }>;
 
 export default async function SlugPage({ params }: { params: Params }) {
   const { slug } = await params;
   const course = await getIndividualCourse(slug);
+  const isEnrolled = await checkIfCourseBought(course.id);
 
   const thumbnailUrl = useContructUrl(course.fileKey);
 
@@ -240,9 +244,7 @@ export default async function SlugPage({ params }: { params: Params }) {
                     <div className="rounded-full p-1 bg-green-500/10 text-green-500">
                       <CheckIcon className="size-3" />
                     </div>
-                    <span>
-                      Acesso vitalício
-                    </span>
+                    <span>Acesso vitalício</span>
                   </li>
                   <li className="flex items-center gap-2 text-sm">
                     <div className="rounded-full p-1 bg-green-500/10 text-green-500">
@@ -256,18 +258,24 @@ export default async function SlugPage({ params }: { params: Params }) {
                     <div className="rounded-full p-1 bg-green-500/10 text-green-500">
                       <CheckIcon className="size-3" />
                     </div>
-                    <span>
-                      Certificado de conclusão
-                    </span>
+                    <span>Certificado de conclusão</span>
                   </li>
-
                 </ul>
               </div>
 
-              <Button className="w-full">
-                Increver-se Agora!
-              </Button>
-              <p className="mt-3 text-center text-xs text-muted-foreground">Teste gratuitamente por 7 dias.<br />Caso não fique satisfeito, garantimos a devolução do seu dinheiro.</p>
+              {isEnrolled ? (
+                <Link className={buttonVariants({ className: "w-full cursor-pointer"})} href="/dashboard">
+                  Assistir Agora!
+                </Link>
+              ) : (
+                <EnrollmentButton courseId={course.id} />
+              )}
+              <p className="mt-3 text-center text-xs text-muted-foreground">
+                Teste gratuitamente por 7 dias.
+                <br />
+                Caso não fique satisfeito, garantimos a devolução do seu
+                dinheiro.
+              </p>
             </CardContent>
           </Card>
         </div>

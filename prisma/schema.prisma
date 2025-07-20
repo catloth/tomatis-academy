@@ -14,9 +14,9 @@ model Test {
 }
 
 model User {
-  id            String    @id
+  id            String       @id
   name          String
-  email         String    @unique
+  email         String       @unique
   emailVerified Boolean
   image         String?
   createdAt     DateTime
@@ -28,6 +28,9 @@ model User {
   courses       Course[]
   accounts      Account[]
   sessions      Session[]
+  enrollment    Enrollment[]
+
+  stripeCustomerId String? @unique
 
   @@map("user")
 }
@@ -94,6 +97,8 @@ model Course {
   userId           String
   chapters         Chapter[]
   user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  enrollment Enrollment[]
 }
 
 model Chapter {
@@ -130,4 +135,28 @@ enum CourseStatus {
   Draft
   Published
   Archived
+}
+
+model Enrollment {
+  id String @id @default(uuid())
+
+  amount Int
+  status EnrollmentStatus @default(Pending)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseId String
+
+  User   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  @@unique([userId, courseId])
+}
+
+enum EnrollmentStatus {
+  Pending
+  Active
+  Cancelled
 }
