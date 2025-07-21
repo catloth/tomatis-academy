@@ -60,6 +60,8 @@ export async function editCourse(
       };
     }
 
+    // TODO: Atualizar o valor do stripe product quando aplicável.
+
     await prisma.course.update({
       where: {
         id: courseId,
