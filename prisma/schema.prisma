@@ -14,21 +14,22 @@ model Test {
 }
 
 model User {
-  id            String       @id
-  name          String
-  email         String       @unique
-  emailVerified Boolean
-  image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
-  banExpires    DateTime?
-  banReason     String?
-  banned        Boolean?
-  role          String?
-  courses       Course[]
-  accounts      Account[]
-  sessions      Session[]
-  enrollment    Enrollment[]
+  id             String           @id
+  name           String
+  email          String           @unique
+  emailVerified  Boolean
+  image          String?
+  createdAt      DateTime
+  updatedAt      DateTime
+  banExpires     DateTime?
+  banReason      String?
+  banned         Boolean?
+  role           String?
+  courses        Course[]
+  accounts       Account[]
+  sessions       Session[]
+  enrollment     Enrollment[]
+  lessonProgress LessonProgress[]
 
   stripeCustomerId String? @unique
 
@@ -81,27 +82,27 @@ model Verification {
 }
 
 model Course {
-  id               String       @id @default(uuid())
+  id String @id @default(uuid())
 
-  title            String
-  description      String
-  fileKey          String
-  price            Int
-  duration         Int
-  level            CourseLevel  @default(Beginner)
+  title       String
+  description String
+  fileKey     String
+  price       Int
+  duration    Int
+  level       CourseLevel @default(Beginner)
 
   stripePriceId String @unique
 
   category         String
   smallDescription String
-  slug             String       @unique
-  
-  status           CourseStatus @default(Draft)
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-  userId           String
-  chapters         Chapter[]
-  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slug             String @unique
+
+  status    CourseStatus @default(Draft)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  userId    String
+  chapters  Chapter[]
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   enrollment Enrollment[]
 }
@@ -128,6 +129,8 @@ model Lesson {
   chapterId    String
   position     Int
   Chapter      Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+
+  lessonProgress LessonProgress[]
 }
 
 enum CourseLevel {
@@ -164,4 +167,21 @@ enum EnrollmentStatus {
   Pending
   Active
   Cancelled
+}
+
+model LessonProgress {
+  id String @id @default(uuid())
+
+  completed Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  User     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   String
+
+  Lesson   Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId String
+
+  @@unique([userId, lessonId])
 }

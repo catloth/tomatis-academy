@@ -1,7 +1,7 @@
 import { AdminCourseType } from "@/app/data/admin/admin-get-courses";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
-import { useContructUrl } from "@/hooks/use-construct-url";
+import { useConstructUrl } from "@/hooks/use-construct-url";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -27,7 +27,7 @@ interface iAppProps {
 }
 
 export function AdminCourseCard({ data }: iAppProps) {
-  const thumbnailUrl = useContructUrl(data.fileKey);
+  const thumbnailUrl = useConstructUrl(data.fileKey);
 
   return (
     <Card className="group relative py-0 gap-0">

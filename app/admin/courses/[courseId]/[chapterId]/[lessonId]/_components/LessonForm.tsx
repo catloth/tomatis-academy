@@ -68,6 +68,8 @@ export function LessonForm({ chapterId, data, courseId }: iAppProps) {
         toast.error(result.message);
       }
     });
+
+    // TODO: Redirect to the course editing page.
   }
 
   return (

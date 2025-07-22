@@ -1,24 +1,28 @@
-import { PublicCourseType } from "@/app/data/course/get-all-courses";
+"use client";
+
+import { EnrolledCourseType } from "@/app/data/user/get-enrolled-courses";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useConstructUrl } from "@/hooks/use-construct-url";
-import { School, TimerIcon } from "lucide-react";
+import { useCourseProgress } from "@/hooks/use-course-progress";
 import Image from "next/image";
 import Link from "next/link";
-import { $ZodTemplateLiteral } from "zod/v4/core";
 
 interface iAppProps {
-  data: PublicCourseType;
+  data: EnrolledCourseType;
 }
 
-export function PublicCourseCard({ data }: iAppProps) {
-  const thumbnailUrl = useConstructUrl(data.fileKey);
+export function CourseProgressCard({ data }: iAppProps) {
+  const thumbnailUrl = useConstructUrl(data.Course.fileKey);
+  const { completedLessons, totalLessons, progressPercentage } =
+    useCourseProgress({ courseData: data.Course });
 
   return (
     <Card className="group relative py-0 gap-0">
-      <Badge className="absolute top-2 right-2 z-10">{data.level}</Badge>
+      <Badge className="absolute top-2 right-2 z-10">{data.Course.level}</Badge>
       <Image
         width={600}
         height={400}
@@ -28,19 +32,36 @@ export function PublicCourseCard({ data }: iAppProps) {
       />
 
       <CardContent className="p-4">
-        <Link className="font-medium text-lg line-clamp-2 hover:underline group-hover:text-primary transition-colors" href={`/courses/${data.slug}`}>{data.title}</Link>
-        <p className="line-clamp-2 text-sm text-muted-foreground leading-tight mt-2">{data.smallDescription}</p>
-        <div className="mt-4 flex items-center gap-x-5">
-          <div className="flex items-center gap-x-2">
-            <TimerIcon className="size-6 p-1 rounded-md text-primary bg-primary/10" />
-            <p className="text-sm text-muted-foreground">{data.duration}h</p>
+        <Link
+          className="font-medium text-lg line-clamp-2 hover:underline group-hover:text-primary transition-colors"
+          href={`/dashboard/${data.Course.slug}`}
+        >
+          {data.Course.title}
+        </Link>
+        <p className="line-clamp-2 text-sm text-muted-foreground leading-tight mt-2">
+          {data.Course.smallDescription}
+        </p>
+
+        <div className="space-y-4 mt-5">
+          <div className="flex justify-between mb-1 text-sm">
+            <p>Progresso:</p>
+            <p className="font-medium">{progressPercentage}%</p>
           </div>
-          <div className="flex items-center gap-x-2">
-            <School className="size-6 p-1 rounded-md text-primary bg-primary/10" />
-            <p className="text-sm text-muted-foreground">{data.category}</p>
-          </div>
+          <Progress
+            value={progressPercentage}
+            className="h-1.5"
+          />
+          <p className="text-xs text-muted-foreground mt-1">
+            {completedLessons} de {totalLessons} aulas concluídas
+          </p>
         </div>
-        <Link className={buttonVariants({className: "w-full mt-4"})} href={`/courses/${data.slug}`}>Saiba mais...</Link>
+
+        <Link
+          className={buttonVariants({ className: "w-full mt-4" })}
+          href={`/dashboard/${data.Course.slug}`}
+        >
+          Saiba mais...
+        </Link>
       </CardContent>
     </Card>
   );
@@ -74,5 +95,5 @@ export function PublicCourseCardSkeleton() {
         <Skeleton className="mt-4 w-full h-10 rounded-md" />
       </CardContent>
     </Card>
-  )
+  );
 }
