@@ -8,7 +8,6 @@ import { stripe } from "@/lib/stripe";
 import { ApiResponse } from "@/lib/types";
 import { fixedWindow, request } from "@arcjet/next";
 import { redirect } from "next/navigation";
-import { StringDecoder } from "string_decoder";
 import Stripe from "stripe";
 
 const aj = arcjet.withRule(

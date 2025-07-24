@@ -1,16 +1,14 @@
 import { env } from "@/lib/env";
-import { PutObjectAclCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { v4 as uuidv4 } from 'uuid';
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { S3 } from "@/lib/S3Client";
 import arcjet, { fixedWindow } from "@/lib/arcjet";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { requireAdmin } from "@/app/data/admin/require-admin";
 
-export const fileUploadSchema = z.object({
+const fileUploadSchema = z.object({
   fileName: z.string().min(1, { message: "O nome do arquivo é obrigatório." }),
   contentType: z.string().min(1, { message: "O tipo de conteúdo é obrigatório." }),
   size: z.number().min(1, { message: "O tamanho do arquivo é obrigatório." }),

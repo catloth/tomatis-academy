@@ -12,7 +12,6 @@ import {
 } from "./RenderState";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
-import { toNamespacedPath } from "path";
 import { useConstructUrl } from "@/hooks/use-construct-url";
 
 interface UploaderState {

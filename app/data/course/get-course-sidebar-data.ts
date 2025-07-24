@@ -2,7 +2,6 @@ import "server-only";
 
 import { requireUser } from "../user/require-user";
 import { prisma } from "@/lib/db";
-import { UNDERSCORE_NOT_FOUND_ROUTE } from "next/dist/shared/lib/constants";
 import { notFound } from "next/navigation";
 
 export async function getCourseSidebarData(slug: string) {

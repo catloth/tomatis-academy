@@ -25,7 +25,6 @@ import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { createLesson } from "../actions";
 import { toast } from "sonner";
-import { formatError } from "zod";
 
 export function NewLessonModal({ courseId, chapterId }: { courseId: string, chapterId: string }) {
   const [isOpen, setIsOpen] = useState(false);

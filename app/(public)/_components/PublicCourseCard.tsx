@@ -7,7 +7,6 @@ import { useConstructUrl } from "@/hooks/use-construct-url";
 import { School, TimerIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { $ZodTemplateLiteral } from "zod/v4/core";
 
 interface iAppProps {
   data: PublicCourseType;

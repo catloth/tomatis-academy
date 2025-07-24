@@ -8,7 +8,6 @@ import {
   type ProtectSignupOptions,
   type SlidingWindowRateLimitOptions,
   protectSignup,
-  shield,
   slidingWindow,
 } from "@arcjet/next";
 
